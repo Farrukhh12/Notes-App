@@ -1,0 +1,14 @@
+<h2>Edit Note</h2>
+
+<form method="POST" action = "{% url 'edit_note' note.id %}">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type = "submit">Update</button>
+
+</form>
+
+
+<a href = "{% url 'note_list' %}">Back</a>

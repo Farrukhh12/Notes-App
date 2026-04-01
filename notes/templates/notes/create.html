@@ -1,0 +1,25 @@
+<!-- notes/templates/notes/create.html -->
+
+<h2>Create Note</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    
+Title:
+<input type="text" name="title">
+
+<br><br>
+
+Content:
+<textarea name="content"></textarea>
+
+<br><br>
+
+Tags (comma separated):
+<input type="text" name="tags" placeholder="work, ideas, study">
+
+<br><br>
+
+<button type="submit">Save</button>
+
+</form>
