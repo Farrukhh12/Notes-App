@@ -6,9 +6,9 @@
 
 Example commands:
 
-git clone <repo>
-cd notes-app
-python -m venv venv
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+1. git clone <repo>
+2. cd notes-app
+3. python -m venv venv
+4. pip install -r requirements.txt
+5. python manage.py migrate
+6. python manage.py runserver
