@@ -9,8 +9,3 @@ class NoteSerializer(serializers.ModelSerializer):
 
 
 
-class NoteCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Note
-        fields = ("title", "content")
