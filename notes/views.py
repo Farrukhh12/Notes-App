@@ -3,7 +3,18 @@ from .forms import NoteForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import NoteSerializer
 
+
+@api_view(["GET"])
+def api_notes(request):
+
+    notes = Note.objects.all()
+    serializer = NoteSerializer(notes, many=True)
+
+    return Response(serializer.data)
 
 
 
@@ -84,7 +95,7 @@ def edit_note(request, id):
 
 @login_required             # decorator
 def delete_note(request, id):               # A view function to handle web request
-    note = Note.objects.get(id=id)     # Gets the note from the database
+    note = Note.objects.get(id=id, owner=request.user)     # Gets the note from the database
     note.delete()                          # Delete note where id equals given id
     return redirect("note_list")           # redirects to note list web page
 
