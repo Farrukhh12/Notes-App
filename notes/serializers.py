@@ -9,3 +9,4 @@ class NoteSerializer(serializers.ModelSerializer):
 
 
 
+# Add serialziers for Tag model if needed
