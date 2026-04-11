@@ -6,15 +6,66 @@ from django.core.paginator import Paginator
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import NoteSerializer
+from django.shortcuts import get_object_or_404
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
+
+
+
+class NoteViewSet(ModelViewSet):
+
+    def get_queryset(self):
+        return Note.objects.filter(owner=self.request.user)
+    
+serializer_class = NoteSerializer
+permission_classes = [IsAuthenticated]   # Only logged-in users can access API
+
+
+
+@api_view(["POST"])
+def api_create_note(request):
+
+    serializer = NoteSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors)    
+
+
+
+
+
+
+@api_view(["GET"])                     # Means this end point accepts GET requests
+def api_notes(request):
+
+    notes = Note.objects.all()               # Fetches all notes from the database
+    serializer = NoteSerializer(notes, many=True)     # Converts Django objects to JSON
+
+    return Response(serializer.data)         # Sends JSON back to user.
+
+
+
 
 
 @api_view(["GET"])
-def api_notes(request):
+def api_note_detail(request, id):
 
-    notes = Note.objects.all()
-    serializer = NoteSerializer(notes, many=True)
+    note = get_object_or_404(Note, id=id)
+
+    serializer = NoteSerializer(note)
 
     return Response(serializer.data)
+
+
+
+
+
+
+
+
 
 
 

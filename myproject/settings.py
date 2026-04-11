@@ -30,6 +30,28 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
+
+
+
+# We now enable login system for APIs.
+# This uses Django login system.
+# We can login via browser and then acces APIs.
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+
+
+
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
