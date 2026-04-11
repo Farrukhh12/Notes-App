@@ -60,3 +60,6 @@ urlpatterns += router.urls
     # convert LoginVew fucntion in to a View by typing LoginView.as_view()
     # name= "create" lets django refer to the URL by name instead of path
      
+
+
+# Comments

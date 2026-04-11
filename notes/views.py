@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
+
 class NoteViewSet(ModelViewSet):
 
     def get_queryset(self):
