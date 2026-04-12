@@ -10,6 +10,7 @@ from notes import views                             #  imports the views.py file
 from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from notes.views import NoteViewSet
+from notes.models import Note
 
 
 
