@@ -50,7 +50,7 @@ urlpatterns = [     # This is a list of routes. Django reads which url belongs t
 ]
 
 
-urlpatterns += router.urls.
+urlpatterns += router.urls
 
 
 #👉 This adds all auto-generated routes.
