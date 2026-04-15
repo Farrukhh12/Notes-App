@@ -10,7 +10,7 @@ from notes import views                             #  imports the views.py file
 from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from notes.views import NoteViewSet
-from notes.models import Note
+
 
 
 
@@ -27,31 +27,23 @@ router.register(r'notes', NoteViewSet, basename='note')
 
 urlpatterns = [     # This is a list of routes. Django reads which url belongs to which view.  
     
+
+     # 🌐 Web app (your HTML pages)
+    path('', views.note_list, name='note_list'),
+    path('create/', views.create_note, name='create_note'),
+    path('edit/<int:id>/', views.edit_note, name='edit_note'),
+    path('delete/<int:id>/', views.delete_note, name='delete_note'),
+
+    # 🔐 Auth
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    
+    path('', include(router.urls)),             # adds all routes
                                  
-    path('admin/', admin.site.urls),      # to open django's admin panel. admin.site.urls is admin website.
-
-    path('', views.note_list, name = 'note_list'),       # shows homepage.
-
-    path("notes/", views.note_list, name="note_list"),      # shows same homepage
-
-    path("create/", views.create_note, name="create_note"),    # 
-
-    path("edit/<int:id>/", views.edit_note, name="edit_note"),           # <int:id> is for django to extract unique id 
-                                                                         # & need it to views to know which notes to edit/del 
-    
-    path("delete/<int:id>/", views.delete_note, name="delete_note"), 
-    
-    path("login/", auth_views.LoginView.as_view(), name="login"),
-
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-
-    path("api/", include("notes.urls")),     # include() allows us to reference other URLconfs.
-
     
 ]
 
 
-urlpatterns += router.urls
+
 
 
 #👉 This adds all auto-generated routes.

@@ -3,68 +3,82 @@ from .forms import NoteForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from .serializers import NoteSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission
+
+
+
+
+# IsOwner class and its method is for : Is this person allowed to opnen the file
+
+
+class IsOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.owner == request.user
+
+    #              Bob    ==    Alice  → False
+    # Example:   Alice (not owner) request for GET /notes/5 that belongs to Bob -> Access Denied.
+
+
+# This make sures that the User requesting object is really owner of that object.
+# IsOwner checks is a user is allowed for a specifc object.
+# Without it, user could access someone else’s note directly by ID ❌
+
+
+# Thing	Meaning
+# request.user	WHO is accessing
+# view	WHERE they are accessing
+# obj	WHAT they are accessing
+
+
 
 
 
 
 class NoteViewSet(ModelViewSet):
 
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated, IsOwner]   # Only logged-in users can access API
+
+
     def get_queryset(self):
         return Note.objects.filter(owner=self.request.user)
+
+
+    # “Only return notes that belong to the currently logged-in user”
+    # self.request.user = current user making request
+    #  You are filtering data per user
+
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)    
+
+
+     # '''' If user sends:
+
+    #{
+       #"title": "My note",
+      #"content": "Hello"
+       # }
+
+       #👉 DRF does:
+
+        # serializer.save()
+
+        # But:
+        #❌ It doesn’t know who the owner is    
+
+
+    # “Whenever a note is created, attach it to the current user”
+    #  this code is used to automatically assign the currently 
+    # logged-in user to a model field (in this case, named owner) when saving a new object.
+    # ✔ Lets you control how data is stored
     
-serializer_class = NoteSerializer
-permission_classes = [IsAuthenticated]   # Only logged-in users can access API
 
-
-
-@api_view(["POST"])
-def api_create_note(request):
-
-    serializer = NoteSerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-
-    return Response(serializer.errors)    
-
-
-
-
-
-
-@api_view(["GET"])                     # Means this end point accepts GET requests
-def api_notes(request):
-
-    notes = Note.objects.all()               # Fetches all notes from the database
-    serializer = NoteSerializer(notes, many=True)     # Converts Django objects to JSON
-
-    return Response(serializer.data)         # Sends JSON back to user.
-
-
-
-
-
-@api_view(["GET"])
-def api_note_detail(request, id):
-
-    note = get_object_or_404(Note, id=id)
-
-    serializer = NoteSerializer(note)
-
-    return Response(serializer.data)
-
-
-
-
-
-
+  
 
 
 
@@ -77,7 +91,9 @@ def create_note(request):
     if request.method == "POST":
         form = NoteForm(request.POST)
         if form.is_valid():
-            form.save(owner=request.user)
+            note = form.save(commit = False)
+            note.owner = request.user
+            note.save()
             return redirect("note_list")
         
     else:
@@ -116,7 +132,7 @@ def note_list(request):
 @login_required
 def edit_note(request, id):
 
-    note = Note.objects.get(id=id, owner = request.user)
+    note = get_object_or_404(Note, id=id, owner=request.user)
 
     if request.method == "POST":
 
@@ -140,18 +156,15 @@ def edit_note(request, id):
 
 
 
-
-
-
-
-
 @login_required             # decorator
 def delete_note(request, id):               # A view function to handle web request
-    note = Note.objects.get(id=id, owner=request.user)     # Gets the note from the database
-    note.delete()                          # Delete note where id equals given id
-    return redirect("note_list")           # redirects to note list web page
+    note = get_object_or_404(Note, id=id, owner=request.user)  # Gets the note from the database
 
+    if request.method == "POST":    
+        note.delete()                          # Delete note where id equals given id
+        return redirect("note_list")           # redirects to note list web page
 
+    return render(request, "notes/confirm_delete.html", {"note": note})
 
 
 
@@ -159,6 +172,5 @@ def delete_note(request, id):               # A view function to handle web requ
 
 
     
-
 
     
