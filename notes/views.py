@@ -91,9 +91,7 @@ def create_note(request):
     if request.method == "POST":
         form = NoteForm(request.POST)
         if form.is_valid():
-            note = form.save(commit = False)
-            note.owner = request.user
-            note.save()
+            form.save(owner = request.user)
             return redirect("note_list")
         
     else:
@@ -121,8 +119,14 @@ def note_list(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    tags = Tag.objects.all()
 
-    return render(request, "notes/list.html", {"page_obj": page_obj, "query": query})
+
+
+
+
+
+    return render(request, "notes/list.html", {"page_obj": page_obj, "query": query, "tags" : tags})
 
 
 

@@ -6,7 +6,7 @@ class NoteForm(forms.ModelForm):
 
     class Meta:
         model = Note
-        fields = ["title","content", "tags"]
+        fields = ["title","content", "tags", "is_public"]
 
     def save(self, owner=None, commit=True):
         note = super().save(commit=False)
