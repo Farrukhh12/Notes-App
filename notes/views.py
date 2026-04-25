@@ -88,17 +88,20 @@ class NoteViewSet(ModelViewSet):
 @login_required
 def create_note(request):
 
-    if request.method == "POST":
+    if request.method == "POST":             
         form = NoteForm(request.POST)
-        if form.is_valid():
-            form.save(owner = request.user)
+        if form.is_valid():                   # “Only continue IF data passed all checks through is_valid method”
+            note = form.save(commit = False)
+            note.owner = request.user       # attach owner to note.
+            note.save()
+
             return redirect("note_list")
         
     else:
-        form = NoteForm()     
-
-    return render(request, "notes/create.html", {"form": form})
-
+        form = NoteForm()               # Creates empty Note form to fill.  
+ 
+    return render(request, "notes/create.html", {"form": form})    # redirects user to 
+                                                                   # webpage to create note. 
 
 
 
@@ -120,10 +123,6 @@ def note_list(request):
     page_obj = paginator.get_page(page_number)
 
     tags = Tag.objects.all()
-
-
-
-
 
 
     return render(request, "notes/list.html", {"page_obj": page_obj, "query": query, "tags" : tags})
