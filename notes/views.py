@@ -80,7 +80,13 @@ class NoteViewSet(ModelViewSet):
 
   
 
+@login_required
+def serializer(request):
 
+    if request.method == "POST":
+        note = NoteForm(request.POST)
+        if form.is_valid():
+            form.save(owner)
 
 
 
