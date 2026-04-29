@@ -2,7 +2,10 @@ from django import forms
 from .models import Note, Tag
 
 class NoteForm(forms.ModelForm):
-    tags = forms.CharField(required=False, help_text="Enter Tags Separated by Commas")
+    tags = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        "placeholder": "Enter tags separated by commas"
+    })
+    )
 
     class Meta:
         model = Note

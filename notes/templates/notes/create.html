@@ -5,26 +5,7 @@
 <form method="POST">
     {% csrf_token %}
     
-Title:
-<input type="text" name="title">
+    {{ form.as_p }}
 
-<br><br>
-
-Content:
-<textarea name="content"></textarea>
-
-<br><br>
-
-Tags (comma separated):
-<input type="text" name="tags" placeholder="work, ideas, study">
-
-<br><br>
-
- Public:
-<input type="checkbox" name="is_public">
-
-<br><br>
-
-<button type="submit">Save</button>
-
+    <button type="submit">Save</button>
 </form>

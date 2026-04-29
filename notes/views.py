@@ -19,22 +19,6 @@ class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
 
-    #              Bob    ==    Alice  → False
-    # Example:   Alice (not owner) request for GET /notes/5 that belongs to Bob -> Access Denied.
-
-
-# This make sures that the User requesting object is really owner of that object.
-# IsOwner checks is a user is allowed for a specifc object.
-# Without it, user could access someone else’s note directly by ID ❌
-
-
-# Thing	Meaning
-# request.user	WHO is accessing
-# view	WHERE they are accessing
-# obj	WHAT they are accessing
-
-
-
 
 
 
@@ -43,46 +27,15 @@ class NoteViewSet(ModelViewSet):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated, IsOwner]   # Only logged-in users can access API
 
-
     def get_queryset(self):
         return Note.objects.filter(owner=self.request.user)
-
-
-    # “Only return notes that belong to the currently logged-in user”
-    # self.request.user = current user making request
-    #  You are filtering data per user
-
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)    
 
 
-     # '''' If user sends:
 
-    #{
-       #"title": "My note",
-      #"content": "Hello"
-       # }
-
-       #👉 DRF does:
-
-        # serializer.save()
-
-        # But:
-        #❌ It doesn’t know who the owner is    
-
-
-    # “Whenever a note is created, attach it to the current user”
-    #  this code is used to automatically assign the currently 
-    # logged-in user to a model field (in this case, named owner) when saving a new object.
-    # ✔ Lets you control how data is stored
     
-
-  
-
-
-
-
 
 
 @login_required
@@ -98,10 +51,10 @@ def create_note(request):
             return redirect("note_list")
         
     else:
-        form = NoteForm()               # Creates empty Note form to fill.  
+        form = NoteForm()               # Follows Get request to Create empty Note form to fill.  
  
-    return render(request, "notes/create.html", {"form": form})    # redirects user to 
-                                                                   # webpage to create note. 
+    return render(request, "notes/create.html", {"form": form})    
+                                                                   
 
 
 
@@ -120,7 +73,7 @@ def note_list(request):
     paginator = Paginator(notes, 5)
 
     page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(page_number)  # extracts just one page of data from a large dataset.
 
     tags = Tag.objects.all()
 
